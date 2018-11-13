@@ -1,4 +1,5 @@
 import React from 'react';
+import List from './List';
 
 class SearchableList extends React.Component {
   constructor(props) {
@@ -19,9 +20,21 @@ class SearchableList extends React.Component {
     });
   }
 
+  onArchive(id) {
+    const { archivedItems } = this.state;
+
+    this.setState({
+      archivedItems: [...archivedItems, id]
+    });
+  }
+
   render() {
     const { list } = this.props;
     const { query } = this.state;
+
+    const filteredList = list
+      .filter(byQuery(query)) || '';
+
 
     return ( 
       <div>
@@ -31,19 +44,41 @@ class SearchableList extends React.Component {
         >
           Search List:
         </Search>
-        <List list={(list || []).filter(byQuery(query))} />
+        <List 
+          list={filteredList} 
+        />
       </div>
     );
   }
 }
 
-function List({ list }) {
-  return (
-    <ul>
-      {list.map(item => <li key={item.id}>{item.name}</li>)}
-    </ul>
-  )
+function byArchived(archivedItems) {
+  return function(item) {
+    return !archivedItems.includes(item.id);
+  }
 }
+
+// function List({ list, onArchive }) {
+//   return (
+//     <ul>
+//       {list.map(item => 
+//         <li key={item.id}>
+//           <span>
+//             {item.name}
+//           </span>
+//           <span>
+//             <button
+//               type="button"
+//               onClick={() => onArchive(item.id)}
+//             >
+//               Archive
+//             </button>
+//           </span>
+//         </li>
+//       )}
+//     </ul>
+//   );
+// }
 
 function Search({ query, onChange, children }) {
   return (
