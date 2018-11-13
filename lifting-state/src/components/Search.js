@@ -1,6 +1,6 @@
 import React from 'react';
 
-class Search extends React.Component {
+class SearchableList extends React.Component {
   constructor(props) {
     super(props);
 
@@ -20,14 +20,18 @@ class Search extends React.Component {
   }
 
   render() {
+    const { list } = this.props;
+    const { query } = this.state;
+
     return ( 
       <div>
-        {this.props.children}
-        <input 
-          type="text"
-          value={this.state.query}
+        <Search 
+          query={query}
           onChange={this.onChange}
-        />
+        >
+          Search List:
+        </Search>
+        <List list={(list || []).filter(byQuery(query))} />
       </div>
     );
   }
@@ -41,4 +45,24 @@ function List({ list }) {
   )
 }
 
-export default Search;
+function Search({ query, onChange, children }) {
+  return (
+    <div>
+      {children} 
+      <input 
+        type="text"
+        value={query}
+        onChange={onChange}
+      />
+    </div>
+  )
+}
+
+function byQuery(query) {
+  return function (item) {
+    return !query || 
+      item.name.toLowerCase().includes(query.toLowerCase());
+  }
+}
+
+export default SearchableList;
